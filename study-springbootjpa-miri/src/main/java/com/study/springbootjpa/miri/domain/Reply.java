@@ -23,7 +23,7 @@ import lombok.ToString;
  * 
  * [기본 필드]
  * Long reply_id
- * Board board : 댓글이 속한 board (association)
+ * // Board board : 댓글이 속한 board (association)
  * String replyer
  * String reply_pw
  * String reply_content
@@ -38,14 +38,14 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @Builder
-@ToString(exclude = "board")
+@ToString// (exclude = "board")
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long reply_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Board board; // asso
+    // @ManyToOne(fetch = FetchType.LAZY)
+    private Long board;
 
     private String replyer;
 

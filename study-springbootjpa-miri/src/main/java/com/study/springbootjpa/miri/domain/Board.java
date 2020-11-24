@@ -65,11 +65,15 @@ public class Board {
 
     private LocalDateTime modifiedAt;
 
-    // 조인 데이터 가져오기용 필드
-    // mappedBy : The field that owns the relationship. Required unless the relationship is unidirectional(양방향).
-    // cascade : (Optional) The operations that must be cascaded to the target of the association. Defaults to no operations being cascaded. When the target collection is a java.util.Map, the cascade element applies to the map value
+    /**
+     * 조인 데이터 가져오기용 필드
+     * // mappedBy : The field that owns the relationship. Required unless the relationship is unidirectional(양방향일 때 필요).
+     * // cascade : (Optional) The operations that must be cascaded to the target of the association. Defaults to no operations being cascaded. When the target collection is a java.util.Map, the cascade element applies to the map value
+     */
     @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    // @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<Reply> replys;
+
     // private List<AttachFile> files;
 
 }

@@ -49,72 +49,71 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "board")
 public class BoardRestController{
-    // @Autowired
-    // private BoardService boardService;
-    // 생성자 주입
     private final BoardService boardService;
     public BoardRestController(BoardService service){
         this.boardService = service;
     }
 
-    // 1. get board (하나의 board 조회)
+    /**
+     * 해당 id 에 해당하는 board 가져오기
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/read/{id}")
     public ResponseEntity<BoardDTO> readBoard(@PathVariable("id") Long id){
-        /**
-         * 해당 id 에 해당하는 board 가져오기
-         */
         BoardDTO result = boardService.read(id);
 
         
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    // 2. get boardList (boardList 조회, 페이징 및 조인 필요)
+    /**
+     * 현재 : 페이징 없이 모든 게시물을 가져온다.
+     * @return
+     */
     @GetMapping(value = "/list")
     public ResponseEntity<List<BoardDTO>> getBoardList(){
-        /**
-         * 기본 한 페이지당 5개의 게시물을 기반으로, 데이터를 받아 Set<Board> 를 가져온다.
-         * 해당 board 에 달린 reply 의 총 count 를 받아온다.
-         */
         List<BoardDTO> result = boardService.getList();
 
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
-    // insert board
+    /**
+     * 화면으로부터 dto 를 받아 DB 에 인서트
+     * @param board
+     * @return
+     */
     @PostMapping(value = "/write")
     public ResponseEntity<BoardDTO> insertBoard(BoardDTO board){
-        /**
-         * 화면으로부터 dto 를 받아, 유효성 검사 후 DB 에 삽입
-         */
-        Board boardAfterInsert = boardService.insert(board);
-
-
+        BoardDTO boardAfterInsert = boardService.insert(board);
 
         // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardService.convertToDto(boardAfterInsert),HttpStatus.OK);
+        return new ResponseEntity<>(boardAfterInsert,HttpStatus.OK);
     }
     
-    // delete board
+    /**
+     * 화면으로부터 id 를 받아, 해당하는 게시글을 DB 에서 삭제
+     * @param id
+     * @return
+     */
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<BoardDTO> deleteBoard(@PathVariable("id") Long id){
-        /**
-         * 화면으로부터 id 를 받아, 해당하는 게시글을 DB 에서 삭제
-         */
-        Board boardAfterDelete = boardService.delete(id);
+        BoardDTO boardAfterDelete = boardService.delete(id);
 
         // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardService.convertToDto(boardAfterDelete),HttpStatus.OK);
+        return new ResponseEntity<>(boardAfterDelete,HttpStatus.OK);
     }
-    // update board (put)
-    // put OR patch method 차이점 : https://papababo.tistory.com/269 참고. 
+
+    /**
+     * 화면으로부터 dto 를 받아, 해당하는 게시글을 update
+     * put OR patch method 차이점 : https://papababo.tistory.com/269 참고. 
+     * @param board
+     * @return
+     */
     @DeleteMapping(value = "/update/{id}")
     public ResponseEntity<BoardDTO> updateBoard(BoardDTO board){
-        /**
-         * 화면으로부터 dto 를 받아, 해당하는 게시글을 update
-         */
-        Board boardAfterUpdate = boardService.update(board);
+        BoardDTO boardAfterUpdate = boardService.update(board);
 
-        return new ResponseEntity<>(boardService.convertToDto(boardAfterUpdate),HttpStatus.OK);
+        return new ResponseEntity<>(boardAfterUpdate,HttpStatus.OK);
     }
 
 }
