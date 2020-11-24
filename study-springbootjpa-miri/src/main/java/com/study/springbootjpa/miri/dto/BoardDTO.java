@@ -1,8 +1,8 @@
 package com.study.springbootjpa.miri.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Id;
 
@@ -29,14 +29,14 @@ import lombok.ToString;
  * 처음 작성 시 modifiedAt = createdAt 의 값
  * 
  * [조인 데이터를 화면에 뿌리기 위한 필드]
- * List<Reply> replys
- * List<AttachFile> files
+ * List<ReplyDTO> replys
+ * List<AttachFileDTO> files
  * 
- * [domain 과 dto 의 차이점?]
- * - 예컨대 작성날짜 등의 값을 특정 포맷으로 바꿀 때 DTO 에서 이를 수행한다던가?
- * => 비즈니스 로직 외에 좀더 세부적인 작업들?
+ * [조인 데이터를 dto 화 하는 로직]
+ * convertReplysToDto : 인자 List<Reply> -> 반환 List<ReplyDTO>
+ * 
  */
-// TODO : entity <-> DTO 변환 담당하는 로직 필요
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -53,13 +53,33 @@ public class BoardDTO {
 
     private String writer;
 
-    private String pw;
+    private String password;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
 
     // 조인 데이터 보관용 필드
-    private List<Reply> replys;
-    // private List<AttachFile> files;
+    private List<ReplyDTO> replys;
+    // private List<AttachFileDTO> files;
+
+    /**
+     * List<Reply> 를 받아, this.replys (List<ReplyDTO>) 로 전환
+     * @param entityList
+     */
+    public void convertReplysToDto(List<Reply> entityList){
+        List<ReplyDTO> result = new ArrayList<>();
+        entityList.forEach(entity ->{
+            ReplyDTO dto = ReplyDTO.builder()
+                .reply_id(entity.getReply_id())
+                .board(entity.getBoard().getBoard_id())
+                .replyer(entity.getReplyer())
+                .rpely_password(entity.getRpely_password())
+                .reply_content(entity.getReply_content())
+                .createdAt(entity.getCreatedAt())
+                .build();
+            result.add(dto);
+        });
+        return result;
+    }
 }

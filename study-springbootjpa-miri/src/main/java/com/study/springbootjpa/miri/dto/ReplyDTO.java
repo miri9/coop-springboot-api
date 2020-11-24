@@ -18,7 +18,7 @@ import lombok.ToString;
  * 
  * [기본 필드]
  * Long reply_id
- * Board board : 댓글이 속한 board
+ * Long board : 순환 참조가 되므로 board_id 담는다.
  * String replyer
  * String reply_pw
  * String reply_content
@@ -35,11 +35,11 @@ import lombok.ToString;
 public class ReplyDTO {
     private Long reply_id;
 
-    private Board board;
+    private Long board;
 
     private String replyer;
 
-    private String rpely_pw;
+    private String rpely_password;
 
     private String reply_content;
 

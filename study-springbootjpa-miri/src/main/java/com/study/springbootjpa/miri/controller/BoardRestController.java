@@ -6,6 +6,7 @@ import com.study.springbootjpa.miri.domain.Board;
 import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.service.BoardService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -41,34 +42,36 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  * 
  */
+// 날 객체로 감싸는 한이 있더라도 내 제어권 안에 있는 객체로 제어하기 위함.
+// 감싸서 보내기 : 바깥 위상으로의 통신을 위함
+// entity 하나로 처음부터 끝까지 게시판 만들기 ? => NO : entity 캐싱 영역에서도 내부 프락싱이 일어나는데 ㄴㄴ
 // 규칙 : CRUD 메서드는 무조건 해당 작업의 대상인 domain 객체를 반환하며(혹은 적어도 키값), 성공/실패 로그를 출력한다.
 @RestController
 @RequestMapping(value = "board")
 public class BoardRestController{
-
+    // @Autowired
+    // private BoardService boardService;
+    // 생성자 주입
     private final BoardService boardService;
     public BoardRestController(BoardService service){
-        // 생성자 주입
         this.boardService = service;
     }
 
     // 1. get board (하나의 board 조회)
     @GetMapping(value = "/read/{id}")
-    public ResponseEntity<BoardDTO> readBoard(@PathVariable("id") Long id,Model model){
+    public ResponseEntity<BoardDTO> readBoard(@PathVariable("id") Long id){
         /**
          * 해당 id 에 해당하는 board 가져오기
          */
         BoardDTO result = boardService.read(id);
 
-        // 날 객체로 감싸는 한이 있더라도 내 제어권 안에 있는 객체로 제어하기 위함.
-        // 감싸서 보내기 : 바깥 위상으로의 통신을 위함
-        // entity 하나로 처음부터 끝까지 게시판 만들기 ? => NO : entity 캐싱 영역에서도 내부 프락싱이 일어나는데 ㄴㄴ
+        
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
     // 2. get boardList (boardList 조회, 페이징 및 조인 필요)
     @GetMapping(value = "/list")
-    public ResponseEntity<List<BoardDTO>> getBoardList(Model model){
+    public ResponseEntity<List<BoardDTO>> getBoardList(){
         /**
          * 기본 한 페이지당 5개의 게시물을 기반으로, 데이터를 받아 Set<Board> 를 가져온다.
          * 해당 board 에 달린 reply 의 총 count 를 받아온다.
@@ -83,12 +86,12 @@ public class BoardRestController{
         /**
          * 화면으로부터 dto 를 받아, 유효성 검사 후 DB 에 삽입
          */
-        Board boardAfterInsert = boardService.convertToEntity(boardService.insert(board));
+        Board boardAfterInsert = boardService.insert(board);
 
 
 
         // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardAfterInsert,HttpStatus.OK);
+        return new ResponseEntity<>(boardService.convertToDto(boardAfterInsert),HttpStatus.OK);
     }
     
     // delete board
@@ -97,10 +100,10 @@ public class BoardRestController{
         /**
          * 화면으로부터 id 를 받아, 해당하는 게시글을 DB 에서 삭제
          */
-        Board boardAfterDelete = boardService.delete(board.getBoard_id);
+        Board boardAfterDelete = boardService.delete(id);
 
         // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardAfterDelete,HttpStatus.OK);
+        return new ResponseEntity<>(boardService.convertToDto(boardAfterDelete),HttpStatus.OK);
     }
     // update board (put)
     // put OR patch method 차이점 : https://papababo.tistory.com/269 참고. 
@@ -109,9 +112,9 @@ public class BoardRestController{
         /**
          * 화면으로부터 dto 를 받아, 해당하는 게시글을 update
          */
-        BoardDTO boardAfterUpdate = boardService.update(board);
+        Board boardAfterUpdate = boardService.update(board);
 
-        return new ResponseEntity<>(boardAfterUpdate,HttpStatus.OK);
+        return new ResponseEntity<>(boardService.convertToDto(boardAfterUpdate),HttpStatus.OK);
     }
 
 }
