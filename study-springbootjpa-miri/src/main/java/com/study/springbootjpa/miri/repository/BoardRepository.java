@@ -17,7 +17,7 @@ s *
 @Repository
 public interface BoardRepository extends JpaRepository<Board,Long> {
     // @EntityGraph(attributePaths = "replys")
-    @Query(value = "select b from Board b where b.board_id = :id")
+    @Query(value = "select b from Board b where b.boardId = :id")
     public Board getBoardWithReply(@Param("id") Long id);
 
     // @EntityGraph(attributePaths = "replys")

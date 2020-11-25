@@ -46,8 +46,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDTO insert(BoardDTO board) {
-        
+        // null
         Board boardAfterInsert = repository.save(convertToEntity(board));
+
         
         log.info("BoardServiceImpl.insert - boardAfterInsert: "+boardAfterInsert.toString());
 

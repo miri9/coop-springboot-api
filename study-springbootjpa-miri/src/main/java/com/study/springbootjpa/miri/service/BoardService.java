@@ -49,21 +49,26 @@ public interface BoardService {
     public default Board convertToEntity(BoardDTO dto){
         // 1. BoardDTO.replys(ReplyDTO) -> replys(Reply)
         List<Reply> replys = new ArrayList<>();
-        dto.getReplys().forEach(i -> { // i = 각 ReplyDTO
-            replys.add(
-                Reply.builder()
-                .reply_id(i.getReply_id())
-                .replyer(i.getReplyer())
-                .reply_password(i.getReply_password())
-                .reply_content(i.getReply_content())
-                .createdAt(i.getCreatedAt())
-                .isDeleted(i.isDeleted())
-                .board(dto.getBoard_id())
-                .build());
-        });
+        boolean haveReplys = dto.getReplys()!=null;
+
+        if(haveReplys){
+            dto.getReplys().forEach(i -> { // i = 각 ReplyDTO
+                replys.add(
+                    Reply.builder()
+                    .replyId(i.getReplyId())
+                    .replyer(i.getReplyer())
+                    .replyPassword(i.getReplyPassword())
+                    .replyContent(i.getReplyContent())
+                    .createdAt(i.getCreatedAt())
+                    .isDeleted(i.isDeleted())
+                    .board(dto.getBoardId())
+                    .build());
+            });
+        } 
+        
         // 2.BoardDTO -> Board : Board.replys 에 1번 변수 replys 인서트
         return Board.builder()
-                .board_id(dto.getBoard_id())
+                .boardId(dto.getBoardId())
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .writer(dto.getWriter())
@@ -71,7 +76,7 @@ public interface BoardService {
                 .createdAt(dto.getCreatedAt())
                 .modifiedAt(dto.getModifiedAt())
                 .isDeleted(dto.isDeleted())
-                .replys(replys)
+                .replys(haveReplys?replys:new ArrayList<>())
                 .build();
 
 
@@ -85,22 +90,23 @@ public interface BoardService {
     public default BoardDTO convertToDto(Board entity){
         // 1. Board.replys -> replys(ReplyDTO)
         List<ReplyDTO> replys = new ArrayList<>();
+        
         entity.getReplys().forEach(i -> { // i = Reply
             replys.add(
                 ReplyDTO.builder()
-                .reply_id(i.getReply_id())
+                .replyId(i.getReplyId())
                 .replyer(i.getReplyer())
-                .reply_password(i.getReply_password())
-                .reply_content(i.getReply_content())
+                .replyPassword(i.getReplyPassword())
+                .replyContent(i.getReplyContent())
                 .createdAt(i.getCreatedAt())
                 .isDeleted(i.isDeleted())
-                .board(entity.getBoard_id())
+                .board(entity.getBoardId())
                 .build());
         });
 
         // 2. Board -> BoardDTO : BoardDTO.replys 에 1번 변수 replys 인서트
         return BoardDTO.builder()
-                .board_id(entity.getBoard_id())
+                .boardId(entity.getBoardId())
                 .title(entity.getTitle())
                 .content(entity.getContent())
                 .writer(entity.getWriter())

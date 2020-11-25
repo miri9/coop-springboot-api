@@ -44,8 +44,8 @@ public class ReplyServiceTests {
         // board(n번) 에 단일 Reply DTO 만들고, repository 로 save
         ReplyDTO replyBeforeInsert = ReplyDTO.builder()
                                     .replyer("replyer")
-                                    .reply_password("rpely_password")
-                                    .reply_content("reply_content")
+                                    .replyPassword("rpely_password")
+                                    .replyContent("reply_content")
                                     .createdAt(LocalDateTime.now())
                                     .isDeleted(false)
                                     .board(boardId)
@@ -79,8 +79,8 @@ public class ReplyServiceTests {
                 log.info("====================== j:"+ j);
                 ReplyDTO replyBeforeInsert = ReplyDTO.builder()
                 .replyer("replyer"+j)
-                .reply_password("rpely_password" + j)
-                .reply_content("reply_content"+j)
+                .replyPassword("rpely_password" + j)
+                .replyContent("reply_content"+j)
                 .createdAt(LocalDateTime.now())
                 .isDeleted(false)
                 .board(i)
@@ -98,7 +98,7 @@ public class ReplyServiceTests {
         for(long i=boardStart; i<=boardEnd; i++){
             log.info("[게시물] "+i+"번 게시물 replys 출력중.....");
             boardService.read(i).getReplys().forEach(reply->{
-                log.info("[단일 댓글] "+reply.getReply_id()+":"+reply.getReplyer()+":"+reply.getReply_content());
+                log.info("[단일 댓글] "+reply.getReplyId()+":"+reply.getReplyer()+":"+reply.getReplyContent());
             });
         }
     }
@@ -109,14 +109,14 @@ public class ReplyServiceTests {
 
         ReplyDTO reply = service.read(target); // 기존 댓글
         String newContent = target+"번 댓글입니다!";
-        reply.setReply_content(newContent);
+        reply.setReplyContent(newContent);
 
         // repository save
         ReplyDTO updatedReply = service.update(reply);
 
         // 새로 업데이트한 댓글 필드가 의도에 맞게 변경됬는지 확인
-        assertTrue( (updatedReply.getReply_content()).equals(newContent), "testUpdate 테스트 : 변경 전/후 내용 불일치");
-        assertTrue(target == updatedReply.getReply_id(), "testUpdate 테스트 : 아이디 불일치");
+        assertTrue( (updatedReply.getReplyContent()).equals(newContent), "testUpdate 테스트 : 변경 전/후 내용 불일치");
+        assertTrue(target == updatedReply.getReplyId(), "testUpdate 테스트 : 아이디 불일치");
         
     }
     @Test
@@ -134,7 +134,7 @@ public class ReplyServiceTests {
         // DTO 출력
         log.info("deletedReply: "+deletedReply.toString());
 
-        assertTrue(target == deletedReply.getReply_id() && deletedReply.isDeleted() == true, "testDelete 테스트 : id 혹은 isDeleted 문제");
+        assertTrue(target == deletedReply.getReplyId() && deletedReply.isDeleted() == true, "testDelete 테스트 : id 혹은 isDeleted 문제");
 
     }
 

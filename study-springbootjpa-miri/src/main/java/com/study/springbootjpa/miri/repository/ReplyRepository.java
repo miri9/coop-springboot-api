@@ -16,10 +16,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 public interface ReplyRepository extends JpaRepository<Reply,Long> {
 
-    @Query(value = "select r from Reply r where r.reply_id = :reply_id")
-    public Reply getReply(@Param("reply_id") Long reply_id);
+    @Query(value = "select r from Reply r where r.replyId = :replyId")
+    public Reply getReply(@Param("replyId") Long replyId);
 
-    @Query(value = "select r from Reply r inner join Board b on b.board_id = :board_id")
-    public List<Reply> getReplyList(@Param("board_id") Long board_id);
+    @Query(value = "select r from Reply r inner join Board b on b.boardId = :boardId")
+    public List<Reply> getReplyList(@Param("boardId") Long boardId);
     
 }

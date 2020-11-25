@@ -33,14 +33,14 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public ReplyDTO read(Long reply_id) {
-        Reply reply = repository.getReply(reply_id);
+    public ReplyDTO read(Long replyId) {
+        Reply reply = repository.getReply(replyId);
         return convertToDto(reply);
     }
 
     @Override
-    public List<ReplyDTO> getList(Long board_id) {
-        List<ReplyDTO> replys = repository.getReplyList(board_id)
+    public List<ReplyDTO> getList(Long boardId) {
+        List<ReplyDTO> replys = repository.getReplyList(boardId)
                                 .stream()
                                 .map(i->convertToDto(i))
                                 .collect(Collectors.toList());
@@ -61,11 +61,11 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public ReplyDTO delete(Long reply_id) {
+    public ReplyDTO delete(Long replyId) {
         // log.info("ReplyServiceImpl.delete - replyToDelete: "+replyToDelete);
 
         // 1. 삭제할 댓글 가져오기
-        ReplyDTO replyToDelete = convertToDto(repository.getReply(reply_id));
+        ReplyDTO replyToDelete = convertToDto(repository.getReply(replyId));
 
         // 2. 댓글 삭제 ( isDeleted = true )
         replyToDelete.setDeleted(true);

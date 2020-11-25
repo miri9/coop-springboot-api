@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +25,7 @@ import lombok.ToString;
  * by miri
  * 
  * [기본 필드]
- * Long board_id
+ * Long boardId
  * String title
  * String content
  * String writer : 익명 멤버 (시큐리티 도입 시 수정 필요)
@@ -52,7 +54,7 @@ import lombok.ToString;
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long board_id;
+    private Long boardId;
 
     private String title;
 
@@ -62,8 +64,9 @@ public class Board {
 
     private String password;
 
+    // @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime createdAt;
-
+    // @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime modifiedAt;
 
     private boolean isDeleted;

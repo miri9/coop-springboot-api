@@ -31,13 +31,13 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
 
 public interface ReplyService {
     
-    public ReplyDTO read(Long reply_id);
+    public ReplyDTO read(Long replyId);
 
     /**
      * 페이지네이션 적용 X.
      * @param Long board_id
      */
-    public List<ReplyDTO> getList(Long board_id);
+    public List<ReplyDTO> getList(Long boardId);
 
     public ReplyDTO insert(ReplyDTO reply);
     public ReplyDTO update(ReplyDTO reply);
@@ -57,10 +57,10 @@ public interface ReplyService {
 
         // ReplyDTO -> Reply : Reply.board 에 board_id 할당
         Reply replyEntity = Reply.builder()
-                            .reply_id(dto.getReply_id())
+                            .replyId(dto.getReplyId())
                             .replyer(dto.getReplyer())
-                            .reply_password(dto.getReply_password())
-                            .reply_content(dto.getReply_content())
+                            .replyPassword(dto.getReplyPassword())
+                            .replyContent(dto.getReplyContent())
                             .createdAt(dto.getCreatedAt())
                             .isDeleted(dto.isDeleted())                            
                             .board(dto.getBoard())
@@ -75,10 +75,10 @@ public interface ReplyService {
     public default ReplyDTO convertToDto(Reply entity){
         // Reply -> ReplyDTO : ReplyDTO.board 에 board_id 할당
         return ReplyDTO.builder()
-                        .reply_id(entity.getReply_id())
+                        .replyId(entity.getReplyId())
                         .replyer(entity.getReplyer())
-                        .reply_password(entity.getReply_password())
-                        .reply_content(entity.getReply_content())
+                        .replyPassword(entity.getReplyPassword())
+                        .replyContent(entity.getReplyContent())
                         .createdAt(entity.getCreatedAt())
                         .isDeleted(entity.isDeleted())                            
                         .board(entity.getBoard())

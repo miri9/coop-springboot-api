@@ -7,13 +7,21 @@ import com.study.springbootjpa.miri.service.BoardService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 /** BoardRestController 
  * 
@@ -31,12 +39,10 @@ import org.springframework.web.bind.annotation.RestController;
  * - deleteBoard : 화면으로부터 id를 받아, 해당 board 를 DB 에서 제거 
  * - updateBoard : 화면으로부터 dto 를 받아, 해당 DB 로 업데이트
  * 
- * 
+ * [규칙]
+ * 1. CRUD 메서드는 무조건 해당 작업의 대상인 domain 객체를 반환
+ * 2. 성공/실패 로그를 출력 'AOP'
  */
-// 날 객체로 감싸는 한이 있더라도 내 제어권 안에 있는 객체로 제어하기 위함.
-// 감싸서 보내기 : 바깥 위상으로의 통신을 위함
-// entity 하나로 처음부터 끝까지 게시판 만들기 ? => NO : entity 캐싱 영역에서도 내부 프락싱이 일어나는데 ㄴㄴ
-// 규칙 : CRUD 메서드는 무조건 해당 작업의 대상인 domain 객체를 반환하며(혹은 적어도 키값), 성공/실패 로그를 출력한다.
 @RestController
 @RequestMapping(value = "board")
 @CrossOrigin("*")
@@ -51,8 +57,11 @@ public class BoardRestController{
      * @param id
      * @return
      */
+    @ApiOperation(value = "[SELECT] 인자 boardId 를 받아 Board 가져오기")
     @GetMapping(value = "/read/{id}")
-    public ResponseEntity<BoardDTO> readBoard(@PathVariable("id") Long id){
+    public ResponseEntity<BoardDTO> readBoard(
+        @ApiParam(value = "DB에 등록된 board 의 Id.")
+        @PathVariable("id") Long id){
         BoardDTO result = boardService.read(id);
 
         
@@ -63,6 +72,7 @@ public class BoardRestController{
      * 현재 : 페이징 없이 모든 게시물을 가져온다.
      * @return
      */
+    @ApiOperation(value = "[SELECT] 페이징 없이 모든 Board 와 그에 딸린 Reply 가져오기")
     @GetMapping(value = "/list")
     public ResponseEntity<List<BoardDTO>> getBoardList(){
         List<BoardDTO> result = boardService.getList();
@@ -74,12 +84,17 @@ public class BoardRestController{
      * @param board
      * @return
      */
+    @ApiOperation(value = "[INSERT] 인자로 BoardDTO 를 받아 DB에 등록")
     @PostMapping(value = "/write")
-    public ResponseEntity<BoardDTO> insertBoard(BoardDTO board){
-        BoardDTO boardAfterInsert = boardService.insert(board);
+    public ResponseEntity<BoardDTO> insertBoard(
+        @RequestParam(value = "boardId") 
+        @ApiParam(value = "boardId 를 제외하고 모든 필드에 값을 채운 BoardDTO.")
+        @RequestBody 
+        @Validated 
+        BoardDTO board){
+            BoardDTO boardAfterInsert = boardService.insert(board);
 
-        // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardAfterInsert,HttpStatus.OK);
+            return new ResponseEntity<>(boardAfterInsert,HttpStatus.OK);
     }
     
     /**
@@ -87,11 +102,13 @@ public class BoardRestController{
      * @param id
      * @return
      */
+    @ApiOperation(value = "[DELTE] 인자로 boardId 를 받아 삭제(Board.isDelete = true)")
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<BoardDTO> deleteBoard(@PathVariable("id") Long id){
+    public ResponseEntity<BoardDTO> deleteBoard(
+        @ApiParam(value = "DB에 등록된 board 의 Id.")
+        @PathVariable("id") Long id) {
         BoardDTO deletedBoard = boardService.delete(id);
 
-        // error msg : Cannot infer type arguments for ResponseEntity<>
         return new ResponseEntity<>(deletedBoard,HttpStatus.OK);
     }
 
@@ -101,8 +118,12 @@ public class BoardRestController{
      * @param board
      * @return
      */
-    @DeleteMapping(value = "/update/{id}")
-    public ResponseEntity<BoardDTO> updateBoard(BoardDTO board){
+    @ApiOperation(value = "[UPDATE] 인자로 BoardDTO 를 받아 수정")
+    @PutMapping(value = "/update")
+    public ResponseEntity<BoardDTO> updateBoard(
+        @RequestParam(value = "BoardDTO")
+        @ApiParam(value = "필드에 변경 사항이 생긴 BoardDTO.")
+        @RequestBody @Validated BoardDTO board){
         BoardDTO boardAfterUpdate = boardService.update(board);
 
         return new ResponseEntity<>(boardAfterUpdate,HttpStatus.OK);
