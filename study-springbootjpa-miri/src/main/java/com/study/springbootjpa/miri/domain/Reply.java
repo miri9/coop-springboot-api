@@ -29,9 +29,8 @@ import lombok.ToString;
  * String reply_content
  * LocalDateTie createdAt
  * : 다른 사이트 예제 보면 수정 시간 따로 표기 안하는 경우 많으므로 수정 시간은 제외했음.
+ * boolean isDeleted : 기본값 false. 댓글 삭제 시 true 이다.
  */
- // TODO : validation 과 jpa association
- // TODO : 비즈니스 로직 메서드 확인
 @Entity
 @Table(name = "tbl_reply")
 @NoArgsConstructor
@@ -49,9 +48,11 @@ public class Reply {
 
     private String replyer;
 
-    private String rpely_password;
+    private String reply_password;
 
     private String reply_content;
 
     private LocalDateTime createdAt;
+
+    private boolean isDeleted;
 }

@@ -24,6 +24,7 @@ import lombok.ToString;
  * String pw : 익명 멤버 (시큐리티 도입 시 수정 필요)
  * LocalDateTime createdAt, modifiedAt : 작성 및 수정 시간
  * 처음 작성 시 modifiedAt = createdAt 의 값
+ * boolean isDeleted : 기본값 false. 게시글 삭제 시 true 이다.
  * 
  * [조인 데이터를 화면에 뿌리기 위한 필드]
  * Board.Reply.Board ... 순환 참조 막고자 @Nullable 넣음
@@ -56,12 +57,17 @@ public class BoardDTO {
 
     private LocalDateTime modifiedAt;
 
+    private boolean isDeleted;
+
     // 조인 데이터 보관용 필드
     private List<ReplyDTO> replys;
     // private List<AttachFileDTO> files;
 
     public void addReply(ReplyDTO dto){
         this.replys.add(dto);
+    }
+    public void addReply(List<ReplyDTO> dtos){
+        dtos.forEach(replyDto -> this.replys.add(replyDto));
     }
 
 }

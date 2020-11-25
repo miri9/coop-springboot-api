@@ -1,8 +1,16 @@
+
+-AOP : (비즈니스 완료 후) 시간에 따라서 .
+최소 : 어떤 메서드가 실행됬는지.
+
+.. 좀 더 나아가면 로그성 엔티티를 만들어 DB 에 저장한다.
+
+-"프록시"
+
 Integer num = 1;
 Integer num2 = new Integer(1);
 => jvm 구조. 힙영역(static 이냐 아니냐의 여부도 고려)
 
-hibernate 계열 프록시
+-hibernate 계열 
 => getFinde, Reference( 전자 : 추가 처리 작업 이뤄진듯? 해봐야..)
 => Entity e = entityManager..... entity$hibernateEntity&2312312
 hibernateEntity{
@@ -10,4 +18,16 @@ hibernateEntity{
         ....
     }
 }
+
+- 지워도 히스토리는 남길 것.
+=> "삭제 => "히스토리로 이관하여 새로 삽입하는 개념"
+- 싱글 전략.
+
+- /** ResponseEntity
+ * - 리플렉션과 프록싱
+ * - 객체를 "감싸서" 프록싱/리플렉션이 걸리지 않게끔 하는 용도. (인지하지 못하는 데이터 변이를 막기 위함.)
+ * - 예) 컬렉션 객체 => 순수 객체가 아닌 객체 집합 => "List<Board> 여도 직접 까봐야 실제 타입을 앎"
+ *   브레이크 포인트 찍으면, new ArrayList<>() 여부에 따라 이상한 타입으로 캐스팅 될 수 O
+ *   결론 = java 가 제대로 인식할 수 있게+데이터 변이 막기 위해 순수 객체로 감싸는 것
+ */
 

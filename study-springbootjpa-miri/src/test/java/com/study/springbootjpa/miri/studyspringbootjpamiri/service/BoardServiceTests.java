@@ -16,10 +16,10 @@ import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.repository.BoardRepository;
 import com.study.springbootjpa.miri.service.BoardServiceImpl;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 
 import lombok.extern.log4j.Log4j2;
 /** 유효성 검사 제외하고 가장 기본적인 CRUD 를 확인하는 케이스모음.
@@ -31,8 +31,9 @@ import lombok.extern.log4j.Log4j2;
  * 
  * [참고]
  * https://beomseok95.tistory.com/205
+ * https://sas-study.tistory.com/316 assertAll
  */
-// @Disabled
+@Disabled
 @Log4j2
 @SpringBootTest(classes = StudySpringbootjpaMiriApplication.class) // 이거 없으면 bean 을 못찾음. 찾아볼것.
 public class BoardServiceTests {
@@ -79,13 +80,12 @@ public class BoardServiceTests {
     
     @Test
     public void testInsert(){
-        // 13개의 게시글 insert
+        // num개의 게시글 insert
         int num = 13;
         
         // 스트림 for문
         IntStream.range(0, num).forEach( i -> {
             BoardDTO dto = BoardDTO.builder()
-            // .board_id()
             .title("title..."+i)
             .content("content...")
             .writer("writer"+i)
@@ -95,7 +95,6 @@ public class BoardServiceTests {
             .replys(new ArrayList<>())
             .build();
             
-            // board 로 전환 후 save : save 안하고 필드 log만 찍기
             service.insert(dto);
             
         });
@@ -117,7 +116,7 @@ public class BoardServiceTests {
         log.info("get으로 가져온 board: "+board.toString());
         
         // 가정한 id 게시물 VS 실제 가져와진 게시물 id 비교하기
-        assertTrue(num == board.getBoard_id(), "testGet 테스트 : 성공");
+        assertTrue(num == board.getBoard_id(), "testGet 테스트 : 게시글 id 불일치");
         
         
     }
@@ -140,7 +139,7 @@ public class BoardServiceTests {
         assertEquals(newBoard.getTitle(), newTitle);
         assertEquals(newBoard.getContent(), newContent);
 
-        assertTrue(service.read(target).getBoard_id()==newBoard.getBoard_id(), "testUpdate 테스트 : 성공");
+        assertTrue(service.read(target).getBoard_id()==newBoard.getBoard_id(), "testUpdate 테스트 : 게시글 id 불일치");
 
     }
 
@@ -151,14 +150,24 @@ public class BoardServiceTests {
     @Test
     public void testDelete(){
         // target번 게시물을 삭제한다.
-        Long target = 9L;
+        Long target = 5L;
 
-        boolean successed = service.delete(target); // 실제로 삭제된 대상
+        BoardDTO deletedBoard = service.delete(target); // 실제로 삭제된 대상
 
-        assertTrue(successed, "testDelete 테스트 : 성공");
+        assertTrue(deletedBoard.isDeleted(), "testDelete 테스트 : deletedBoard.isDeleted()==false"); // ture 여야함
 
-        // TODO : 리플 서비스 테스트 후, 여기로 다시 돌아와서 리플도 삭제됬는지 확인
-
+        // 게시글에 댓글이 없다면 그대로 테스트 끝.
+        if(deletedBoard.getReplys() == null || deletedBoard.getReplys().isEmpty() ){
+            log.info("삭제된 게시글엔 댓글이 없음.");
+            return;
+        }
+        
+        // 게시글에 댓글이 달려있다면, 해당 댓글 또한 모두 삭제된 상태여야 함.
+        log.info("삭제된 게시글에 댓글 있음.");
+        deletedBoard.getReplys().forEach(reply -> {
+            log.info("댓글 확인: "+reply.getReply_id()+" , isDeleted: "+reply.isDeleted());
+            assertTrue(reply.isDeleted(), "testDelete 테스트 : reply.isDeleted()==false");
+        });
     }
 
     @Test

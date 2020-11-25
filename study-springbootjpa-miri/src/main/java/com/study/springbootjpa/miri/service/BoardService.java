@@ -2,8 +2,6 @@ package com.study.springbootjpa.miri.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import com.study.springbootjpa.miri.domain.Board;
 import com.study.springbootjpa.miri.domain.Reply;
@@ -23,7 +21,7 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
  * (페이징O 경우 : 미완성) CurrentPage 와 Pagination 을 이용해 페이징된 데이터를 보내준다.
  * - insert : 화면으로부터 dto 를 받아, DB 에 삽입
  * - update : 화면으로부터 dto 를 받아, 해당 DB 로 업데이트
- * - delete : 화면으로부터 id를 받아, 해당 board 를 DB 에서 제거 
+ * - delete : 화면으로부터 id를 받아, 해당 board.isDeleted = true;
  * 
  * [entity,dto 치환 메서드]
  * - convertToDto : board domian -> board dto
@@ -41,7 +39,7 @@ public interface BoardService {
 
 	public BoardDTO insert(BoardDTO board);
     public BoardDTO update(BoardDTO board);
-    public boolean delete(Long id);
+    public BoardDTO delete(Long id);
 
     /**
      * DTO -> Entity
@@ -51,14 +49,15 @@ public interface BoardService {
     public default Board convertToEntity(BoardDTO dto){
         // 1. BoardDTO.replys(ReplyDTO) -> replys(Reply)
         List<Reply> replys = new ArrayList<>();
-        dto.getReplys().forEach(i -> {
+        dto.getReplys().forEach(i -> { // i = 각 ReplyDTO
             replys.add(
                 Reply.builder()
                 .reply_id(i.getReply_id())
                 .replyer(i.getReplyer())
-                .rpely_password(i.getRpely_password())
+                .reply_password(i.getReply_password())
                 .reply_content(i.getReply_content())
                 .createdAt(i.getCreatedAt())
+                .isDeleted(i.isDeleted())
                 .board(dto.getBoard_id())
                 .build());
         });
@@ -71,6 +70,7 @@ public interface BoardService {
                 .password(dto.getPassword())
                 .createdAt(dto.getCreatedAt())
                 .modifiedAt(dto.getModifiedAt())
+                .isDeleted(dto.isDeleted())
                 .replys(replys)
                 .build();
 
@@ -85,14 +85,15 @@ public interface BoardService {
     public default BoardDTO convertToDto(Board entity){
         // 1. Board.replys -> replys(ReplyDTO)
         List<ReplyDTO> replys = new ArrayList<>();
-        entity.getReplys().forEach(i -> {
+        entity.getReplys().forEach(i -> { // i = Reply
             replys.add(
                 ReplyDTO.builder()
                 .reply_id(i.getReply_id())
                 .replyer(i.getReplyer())
-                .rpely_password(i.getRpely_password())
+                .reply_password(i.getReply_password())
                 .reply_content(i.getReply_content())
                 .createdAt(i.getCreatedAt())
+                .isDeleted(i.isDeleted())
                 .board(entity.getBoard_id())
                 .build());
         });
@@ -106,6 +107,7 @@ public interface BoardService {
                 .password(entity.getPassword())
                 .createdAt(entity.getCreatedAt())
                 .modifiedAt(entity.getModifiedAt())
+                .isDeleted(entity.isDeleted())
                 .replys(replys)
                 .build();
 

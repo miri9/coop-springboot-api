@@ -2,9 +2,7 @@ package com.study.springbootjpa.miri.service;
 
 import java.util.List;
 
-import com.study.springbootjpa.miri.domain.Board;
 import com.study.springbootjpa.miri.domain.Reply;
-import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.dto.ReplyDTO;
 
 /**
@@ -12,7 +10,7 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
  * 
  * by miri
  * 
- * 기본 댓글의 CRUD 를 가진 댓글 인터페이스
+ * 기본 댓글의 CRUD 를 가진 인터페이스
  * 
  * [비즈니스 메서드]
  * - read : 댓글 id 로 단일 댓글 가져오기
@@ -21,7 +19,7 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
  * (페이징O 경우 : 미완성)
  * - insert : 화면으로부터 dto를 받아, DB 에 삽입
  * - update : 화면으로부터 dto를 받아, DB 에 업데이트
- * - delete : 화면으로투버 id를 받아, DB 에서 제거
+ * - delete : 화면으로투버 id를 받아, 해당 reply.isDeleted = true;
  * 
  * [entity,dto 치환 메서드]
  * - convertToDto : domian -> dto
@@ -47,7 +45,7 @@ public interface ReplyService {
     /**
      * @param Long reply_id
      */
-    public boolean delete(Long reply_id);
+    public ReplyDTO delete(Long reply_id);
 
     /**
      * DTO -> Entity
@@ -61,9 +59,10 @@ public interface ReplyService {
         Reply replyEntity = Reply.builder()
                             .reply_id(dto.getReply_id())
                             .replyer(dto.getReplyer())
-                            .rpely_password(dto.getRpely_password())
+                            .reply_password(dto.getReply_password())
                             .reply_content(dto.getReply_content())
                             .createdAt(dto.getCreatedAt())
+                            .isDeleted(dto.isDeleted())                            
                             .board(dto.getBoard())
                             .build();
         return replyEntity;
@@ -78,9 +77,10 @@ public interface ReplyService {
         return ReplyDTO.builder()
                         .reply_id(entity.getReply_id())
                         .replyer(entity.getReplyer())
-                        .rpely_password(entity.getRpely_password())
+                        .reply_password(entity.getReply_password())
                         .reply_content(entity.getReply_content())
                         .createdAt(entity.getCreatedAt())
+                        .isDeleted(entity.isDeleted())                            
                         .board(entity.getBoard())
                         .build();
     }

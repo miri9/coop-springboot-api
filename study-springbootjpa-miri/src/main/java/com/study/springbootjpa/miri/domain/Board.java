@@ -30,6 +30,7 @@ import lombok.ToString;
  * String pw : 익명 멤버 (시큐리티 도입 시 수정 필요)
  * LocalDateTime createdAt, modifiedAt : 작성 및 수정 시간
  * 처음 작성 시 modifiedAt = createdAt 의 값
+ * boolean isDeleted : 기본값 false. 게시글 삭제 시 true 이다.
  * 
  * [조인 데이터 위한 프리징 필드]
  * List<Reply> replys
@@ -64,6 +65,8 @@ public class Board {
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
+
+    private boolean isDeleted;
 
     /**
      * 조인 데이터 가져오기용 필드

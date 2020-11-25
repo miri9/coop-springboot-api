@@ -1,97 +1,141 @@
-// package com.study.springbootjpa.miri.studyspringbootjpamiri.service;
+package com.study.springbootjpa.miri.studyspringbootjpamiri.service;
 
-// import java.time.LocalDateTime;
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.stream.IntStream;
-// import java.util.stream.LongStream;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
-// import com.study.springbootjpa.miri.StudySpringbootjpaMiriApplication;
-// import com.study.springbootjpa.miri.dto.BoardDTO;
-// import com.study.springbootjpa.miri.dto.ReplyDTO;
-// import com.study.springbootjpa.miri.service.BoardService;
-// import com.study.springbootjpa.miri.service.ReplyService;
+import com.study.springbootjpa.miri.StudySpringbootjpaMiriApplication;
+import com.study.springbootjpa.miri.dto.ReplyDTO;
+import com.study.springbootjpa.miri.service.BoardService;
+import com.study.springbootjpa.miri.service.ReplyService;
 
-// import org.junit.jupiter.api.Disabled;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-// import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j2;
 
-// /**
-//  * 유효성 검사 제외하고 가장 기본적인 CRUD 를 확인하는 케이스모음.
-//  * 
-//  * - testGet : 특정 게시물에 속한 댓글 Reply 하나 가져오기 - testGetList : 특정 게시물에 속한 댓글 Reply
-//  * 모두 가져오기
-//  * - testGetList
-//  * 
-//  *
-//  * - testInsert
-//  * - testUpdate
-//  * - testDelete
-//  */
-// @Disabled
-// @Log4j2
-// @SpringBootTest(classes = StudySpringbootjpaMiriApplication.class)
-// public class ReplyServiceTests {
-   
-//     @Autowired
-//     private ReplyService service;
+/**
+ * 유효성 검사 제외하고 가장 기본적인 CRUD 를 확인하는 케이스모음.
+ * 
+ * - testGet : 특정 게시물에 속한 댓글 Reply 하나 가져오기 - testGetList : 특정 게시물에 속한 댓글 Reply
+ * 모두 가져오기
+ * - testGetList
+ * 
+ *
+ * - testInsert
+ * - testUpdate
+ * - testDelete
+ */
+@Disabled
+@Log4j2
+@SpringBootTest(classes = StudySpringbootjpaMiriApplication.class)
+public class ReplyServiceTests {
+    @Autowired
+    private ReplyService service;
 
-//     @Autowired
-//     private BoardService boardService;
+    @Autowired
+    private BoardService boardService;
 
-//     // @Rollback
-//     @Transactional
-//     @Test
-//     public void testInsert(){
-//         // 게시물 5번부터 10번까지 , 각각 댓글 5개를 단다.
-//         Long boardStart = 5L;
-//         Long boardEnd = 10L;
-//         int replyStart = 1;
-//         int replyEnd = 5;
+    @Test
+    public void testInsert(){
+        Long boardId = 5L;
+        // board(n번) 에 단일 Reply DTO 만들고, repository 로 save
+        ReplyDTO replyBeforeInsert = ReplyDTO.builder()
+                                    .replyer("replyer")
+                                    .reply_password("rpely_password")
+                                    .reply_content("reply_content")
+                                    .createdAt(LocalDateTime.now())
+                                    .isDeleted(false)
+                                    .board(boardId)
+                                    .build();
+
+        log.info("replyBeforeInsert: "+replyBeforeInsert.toString());
         
         
-//         // 게시물을 가져온다. (boardTarget)
-//         // 게시물에 댓글을 5개씩 저장한다. (boardTarget.replyTarget에 저장)
-//         List<BoardDTO> boardList =new ArrayList<>();
-//         LongStream.rangeClosed(boardStart, boardEnd).forEach(i->{ // 게시물 for문
+        ReplyDTO replyAfterInsert = service.insert(replyBeforeInsert);
 
-//             BoardDTO boardTarget = boardService.read(i);
-//             List<ReplyDTO> replyTarget = boardTarget.getReplys();
+        log.info("replyAfterInsert: "+replyAfterInsert.toString());
 
-//             // 댓글을 다섯개씩 만든다
-//             IntStream.rangeClosed(replyStart, replyEnd).forEach(j->{ // 댓글 for문
-//                 ReplyDTO newReply = ReplyDTO.builder()
-//                 .replyer("replyer"+j)
-//                 .rpely_password("rpely_password"+j)
-//                 .reply_content("reply_content"+j)
-//                 .createdAt(LocalDateTime.now())
-//                 .build();
+        // board 객체 가져와 reply 수 확인하기
+        boardService.read(boardId).getReplys().forEach(reply -> {
+            log.info("Board.replys 의 각 reply: "+reply.toString());
+        });
+    }
+    // @Transactional
+    @Test
+    public void testInsert2(){
+        // 게시물 5번부터 10번까지 , 각각 댓글 5개를 단다.
+        Long boardStart = 5L; // id
+        Long boardEnd = 10L; // id
+        int replyStart = 1; // 개수
+        int replyEnd = 5; // 개수
 
-//                 replyTarget.add(newReply);
-//             });
+        // 댓글 5개를 만들어 repository 에 save
+        for(long i=boardStart; i<=boardEnd; i++){
+            log.info("====================== i:"+ i);
+            for(int j=replyStart; j<=replyEnd; j++){
+                log.info("====================== j:"+ j);
+                ReplyDTO replyBeforeInsert = ReplyDTO.builder()
+                .replyer("replyer"+j)
+                .reply_password("rpely_password" + j)
+                .reply_content("reply_content"+j)
+                .createdAt(LocalDateTime.now())
+                .isDeleted(false)
+                .board(i)
+                .build();
 
-//             // boardList 에 "댓글을 포함한 게시물" 을 저장.
-//             boardTarget.setReplys(replyTarget);
-//             boardList.add(boardTarget);
-//         });
+                log.info("replyBeforeInsert: "+replyBeforeInsert);
+                
+                // 2-2. replyRepository 에 replyBeforeInsert save.
+                // log.info("=========save "+j+"=========");
+                ReplyDTO replyAfterInsert = service.insert(replyBeforeInsert);
+            }
+        }
 
-//         // 생각대로 각 게시물에 각 댓글이 정확히 만들어졌는지 확인한다.
-//         boardList.forEach(board -> {
-//             log.info("======board 시작=======");
-//             log.info(board.toString());
-//             log.info("==board.replys 시작==");
-//             board.getReplys().forEach(reply -> reply.toString());
-//             log.info("==board.replys  끝==");
-//             log.info("======board  끝=======");
-//         });
+        // 게시물을 불러와 toString 하여 replys 필드 출력하기
+        for(long i=boardStart; i<=boardEnd; i++){
+            log.info("[게시물] "+i+"번 게시물 replys 출력중.....");
+            boardService.read(i).getReplys().forEach(reply->{
+                log.info("[단일 댓글] "+reply.getReply_id()+":"+reply.getReplyer()+":"+reply.getReply_content());
+            });
+        }
+    }
+    @Test
+    public void testUpdate(){
+        // target번 댓글의 content 를 한글로 변경한다.
+        Long target = 85L;
 
-//         // board 를 save한다.
-//         boardService.save(board)
-//     }
+        ReplyDTO reply = service.read(target); // 기존 댓글
+        String newContent = target+"번 댓글입니다!";
+        reply.setReply_content(newContent);
 
-// }
+        // repository save
+        ReplyDTO updatedReply = service.update(reply);
+
+        // 새로 업데이트한 댓글 필드가 의도에 맞게 변경됬는지 확인
+        assertTrue( (updatedReply.getReply_content()).equals(newContent), "testUpdate 테스트 : 변경 전/후 내용 불일치");
+        assertTrue(target == updatedReply.getReply_id(), "testUpdate 테스트 : 아이디 불일치");
+        
+    }
+    @Test
+    public void testDelete(){
+        // target번 댓글의 isDeleted = true 로 변경한다.
+        Long target = 86L;
+
+        // 삭제 전 DTO 받아오기
+        ReplyDTO originalReply  = service.read(target);
+        log.info("originalReply: "+originalReply.toString());
+
+        // 삭제 후, 해당 DTO 를 받아온다.
+        ReplyDTO deletedReply  = service.delete(target);
+
+        // DTO 출력
+        log.info("deletedReply: "+deletedReply.toString());
+
+        assertTrue(target == deletedReply.getReply_id() && deletedReply.isDeleted() == true, "testDelete 테스트 : id 혹은 isDeleted 문제");
+
+    }
+
+}

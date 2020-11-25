@@ -2,7 +2,9 @@ package com.study.springbootjpa.miri.dto;
 
 import java.time.LocalDateTime;
 
-import com.study.springbootjpa.miri.domain.Board;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,14 +18,9 @@ import lombok.ToString;
  * 
  * by miri
  * 
- * [기본 필드]
- * Long reply_id
- * // BoardDTO board
- * String replyer
- * String reply_pw
- * String reply_content
- * LocalDateTie createdAt
- * : 다른 사이트 예제 보면 수정 시간 따로 표기 안하는 경우 많으므로 수정 시간은 제외했음.
+ * [기본 필드] Long reply_id // BoardDTO board String replyer String reply_pw String
+ * reply_content LocalDateTie createdAt : 다른 사이트 예제 보면 수정 시간 따로 표기 안하는 경우 많으므로
+ * 수정 시간은 제외했음. boolean isDeleted : 기본값 false. 댓글 삭제 시 true 이다.
  */
 @Getter
 @Setter
@@ -32,17 +29,18 @@ import lombok.ToString;
 @ToString
 @Builder
 public class ReplyDTO {
+    @Id
     private Long reply_id;
 
     private Long board;
 
     private String replyer;
 
-    private String rpely_password;
+    private String reply_password;
 
     private String reply_content;
 
     private LocalDateTime createdAt;
-
+    private boolean isDeleted;
 
 }

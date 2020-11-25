@@ -17,9 +17,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class BoardServiceImpl implements BoardService {
 
-    // @Autowired
-    // private BoardRepository repository;
-    
     //생성자 주입
     private final BoardRepository repository;
     public BoardServiceImpl(BoardRepository repository){
@@ -64,7 +61,7 @@ public class BoardServiceImpl implements BoardService {
     public BoardDTO update(BoardDTO board) {
         // 인자 board : 새로 업데이트할 내용 담은 board
         
-        log.info("BoardServiceImpl.update - BoardboardToUpdate (param DTO): "+board.toString());
+        log.info("BoardServiceImpl.update - boardToUpdate (param DTO): "+board.toString());
         
         Board boardAfterUpdate = repository.save(convertToEntity(board)); // boardAfterUpdate : 업데이트 후 board
         
@@ -73,19 +70,22 @@ public class BoardServiceImpl implements BoardService {
         return convertToDto(boardAfterUpdate);
     }
 
-    /**
-     * TODO : delete 시 board 와 reply 모두 삭제되는지 확인
-     */
     @Override
-    public boolean delete(Long id){
-        Board boardToDelete = repository.getBoardWithReply(id); // 디버깅용 : boardToDelete : 삭제할 board
-        log.info("BoardServiceImpl.update - boardToDelete: "+boardToDelete.toString());// 디버깅용 
+    public BoardDTO delete(Long id){
 
-        boolean hasSuccessedQuery = repository.delete(id)>0? true:false; // hasSuccessedQuery: @Modifying@Query 삭제 성공 횟수
+        // 1. 삭제할 게시물 가져오기
+        BoardDTO boardToDelete = convertToDto(repository.getBoardWithReply(id));
+        // 2. 댓글 삭제 ( isDeleted = true )
+        boardToDelete.getReplys().forEach(replyDto -> replyDto.setDeleted(true));
+        // 3. 게시글 삭제 ( isDeleted = true ) : 댓글의 상태는 이미 isDeleted = true 여야 함.
+        boardToDelete.setDeleted(true);
+
+        // 4. 댓글과 게시글의 isDeleted = true 이면, repository 에 save
+        Board deletedBoard = repository.save(convertToEntity(boardToDelete));
         
-        // TODO : board,reply 각각 isdeleted 필드 추가 : 
-
-        return hasSuccessedQuery;
+        // 5. 실제로 delete 한 DTO 를 반환   
+        log.info("BoardServiceImpl.update - 실제로 삭제된 deletedBoard: "+deletedBoard.toString());
+        return convertToDto(deletedBoard);
     }
 
 }

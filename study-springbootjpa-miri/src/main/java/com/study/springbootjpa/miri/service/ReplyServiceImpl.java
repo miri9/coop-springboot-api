@@ -3,7 +3,6 @@ package com.study.springbootjpa.miri.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 import com.study.springbootjpa.miri.domain.Reply;
 import com.study.springbootjpa.miri.dto.ReplyDTO;
 import com.study.springbootjpa.miri.repository.ReplyRepository;
@@ -23,7 +22,12 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public ReplyDTO insert(ReplyDTO reply) {
-        Reply replyAfterInsert = repository.save(convertToEntity(reply));
+        Reply replyBeforeInsert = convertToEntity(reply);
+        log.info("ReplyServiceImpl.insert - replyBeforeInsert: "+replyBeforeInsert);
+        
+        Reply replyAfterInsert= repository.save(replyBeforeInsert);
+        log.info("ReplyServiceImpl.insert - replyAfterInsert: "+replyAfterInsert);
+
 
         return convertToDto(replyAfterInsert);
     }
@@ -47,24 +51,31 @@ public class ReplyServiceImpl implements ReplyService {
     @Override
     public ReplyDTO update(ReplyDTO reply) {
         // 새 reply 로 기존 reply 덮어씌우기
+        log.info("ReplyServiceImpl.update - replyBeforeUpdate: "+reply.toString());
+
         Reply replyUpdated = repository.save(convertToEntity(reply));
+
+        log.info("ReplyServiceImpl.update - replyUpdated: "+replyUpdated.toString());
+        
         return convertToDto(replyUpdated);
     }
 
     @Override
-    public boolean delete(Long reply_id) {
-        // 기존 reply : 추후 비교 로직 필요한가?
-        Reply replyToDelete = repository.findById(reply_id).get(); // 디버깅용
-        // log.info("ReplyServiceImpl.delete - replyToDelete: "+replyToDelete);// 디버깅용
+    public ReplyDTO delete(Long reply_id) {
+        // log.info("ReplyServiceImpl.delete - replyToDelete: "+replyToDelete);
 
-        // 실제로 삭제한 reply
-        // Reply replyDeleted = repository.delete(reply_id);
+        // 1. 삭제할 댓글 가져오기
+        ReplyDTO replyToDelete = convertToDto(repository.getReply(reply_id));
+
+        // 2. 댓글 삭제 ( isDeleted = true )
+        replyToDelete.setDeleted(true);
+
+        // 3. isDeleted 를 수정한 댓글을 repository 에 save
+        Reply deletedReply = repository.save(convertToEntity(replyToDelete));
         
-        log.info("ReplyServiceImpl.delete - replyToDelete: "+replyToDelete);
-        boolean hasSuccessedQuery = repository.delete(reply_id)>0? true:false; // hasSuccessedQuery: @Modifying@Query 삭제 성공 횟수
-
-
-        return hasSuccessedQuery;
+        // 4. 실제로 delete 한 DTO 를 반환.
+        log.info("BoardServiceImpl.delete - deletedReply: "+deletedReply.toString());
+        return convertToDto(deletedReply);
     }
     
 }
