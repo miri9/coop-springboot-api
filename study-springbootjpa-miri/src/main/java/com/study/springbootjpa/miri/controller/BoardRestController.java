@@ -96,11 +96,11 @@ public class BoardRestController{
      * @return
      */
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<BoardDTO> deleteBoard(@PathVariable("id") Long id){
-        BoardDTO boardAfterDelete = boardService.delete(id);
+    public ResponseEntity<Boolean> deleteBoard(@PathVariable("id") Long id){
+        Boolean successed = boardService.delete(id);
 
         // error msg : Cannot infer type arguments for ResponseEntity<>
-        return new ResponseEntity<>(boardAfterDelete,HttpStatus.OK);
+        return new ResponseEntity<>(successed,HttpStatus.OK);
     }
 
     /**

@@ -30,6 +30,7 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
  * [코드 제한]
  * 모든 메서드는 해당 작업을 거친 결과물을 다시 반환하여야 한다.
  */
+
 public interface ReplyService {
     
     public ReplyDTO read(Long reply_id);
@@ -46,7 +47,7 @@ public interface ReplyService {
     /**
      * @param Long reply_id
      */
-    public ReplyDTO delete(Long reply_id);
+    public boolean delete(Long reply_id);
 
     /**
      * DTO -> Entity
@@ -54,23 +55,18 @@ public interface ReplyService {
      * @return Reply
      */
     public default Reply convertToEntity(ReplyDTO dto){
-        // 1. replyEntity.board 객체 만들기
-        BoardDTO boardDto = dto.getBoard();
+        
 
-        // 2. replyDto -> replyEntity : reply.board 제외하고 나머지 필드 채운 Entity 만들기
+        // ReplyDTO -> Reply : Reply.board 에 board_id 할당
         Reply replyEntity = Reply.builder()
                             .reply_id(dto.getReply_id())
                             .replyer(dto.getReplyer())
                             .rpely_password(dto.getRpely_password())
                             .reply_content(dto.getReply_content())
                             .createdAt(dto.getCreatedAt())
-                            // .board(board)
+                            .board(dto.getBoard())
                             .build();
-        
-        // 3. replyDto.boardDto -> 
-        boardDto.addReply(dto);
-
-        return null;
+        return replyEntity;
     }
     /**
      * Entity -> DTO
@@ -78,12 +74,14 @@ public interface ReplyService {
      * @return Reply
      */
     public default ReplyDTO convertToDto(Reply entity){
+        // Reply -> ReplyDTO : ReplyDTO.board 에 board_id 할당
         return ReplyDTO.builder()
                         .reply_id(entity.getReply_id())
                         .replyer(entity.getReplyer())
                         .rpely_password(entity.getRpely_password())
                         .reply_content(entity.getReply_content())
                         .createdAt(entity.getCreatedAt())
+                        .board(entity.getBoard())
                         .build();
     }
 

@@ -63,9 +63,12 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDTO update(BoardDTO board) {
         // 인자 board : 새로 업데이트할 내용 담은 board
-
-        Board boardToUpdate = repository.getBoardWithReply(board.getBoard_id()); // boardToUpdate : 기존 board
-        Board boardAfterUpdate = repository.save(boardToUpdate); // boardAfterUpdate : 업데이트 후 board
+        
+        log.info("BoardServiceImpl.update - BoardboardToUpdate (param DTO): "+board.toString());
+        
+        Board boardAfterUpdate = repository.save(convertToEntity(board)); // boardAfterUpdate : 업데이트 후 board
+        
+        log.info("BoardServiceImpl.update - boardAfterUpdate: "+boardAfterUpdate.toString());
 
         return convertToDto(boardAfterUpdate);
     }
@@ -74,12 +77,15 @@ public class BoardServiceImpl implements BoardService {
      * TODO : delete 시 board 와 reply 모두 삭제되는지 확인
      */
     @Override
-    public BoardDTO delete(Long id){
-        Board boardToDelete = repository.getBoardWithReply(id); // boardToDelete : 삭제할 board
+    public boolean delete(Long id){
+        Board boardToDelete = repository.getBoardWithReply(id); // 디버깅용 : boardToDelete : 삭제할 board
+        log.info("BoardServiceImpl.update - boardToDelete: "+boardToDelete.toString());// 디버깅용 
 
-        Board boardDeleted = repository.delete(id); //boardAfterDelete : 삭제 후 board
+        boolean hasSuccessedQuery = repository.delete(id)>0? true:false; // hasSuccessedQuery: @Modifying@Query 삭제 성공 횟수
+        
+        // TODO : board,reply 각각 isdeleted 필드 추가 : 
 
-        return convertToDto(boardDeleted);
+        return hasSuccessedQuery;
     }
 
 }

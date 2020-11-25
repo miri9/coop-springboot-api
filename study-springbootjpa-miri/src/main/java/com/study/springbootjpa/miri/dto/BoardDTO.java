@@ -1,13 +1,9 @@
 package com.study.springbootjpa.miri.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.persistence.Id;
-
-import com.study.springbootjpa.miri.domain.Reply;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,7 +57,6 @@ public class BoardDTO {
     private LocalDateTime modifiedAt;
 
     // 조인 데이터 보관용 필드
-    @Nullable
     private List<ReplyDTO> replys;
     // private List<AttachFileDTO> files;
 

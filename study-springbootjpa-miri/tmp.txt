@@ -1,0 +1,13 @@
+Integer num = 1;
+Integer num2 = new Integer(1);
+=> jvm 구조. 힙영역(static 이냐 아니냐의 여부도 고려)
+
+hibernate 계열 프록시
+=> getFinde, Reference( 전자 : 추가 처리 작업 이뤄진듯? 해봐야..)
+=> Entity e = entityManager..... entity$hibernateEntity&2312312
+hibernateEntity{
+    class 2312312 extends Entity {
+        ....
+    }
+}
+

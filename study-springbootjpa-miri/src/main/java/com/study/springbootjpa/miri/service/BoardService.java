@@ -41,7 +41,7 @@ public interface BoardService {
 
 	public BoardDTO insert(BoardDTO board);
     public BoardDTO update(BoardDTO board);
-    public BoardDTO delete(Long id);
+    public boolean delete(Long id);
 
     /**
      * DTO -> Entity
