@@ -8,6 +8,9 @@ import com.study.springbootjpa.miri.domain.Reply;
 import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.dto.ReplyDTO;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * BoardService 
  * by miri
@@ -33,9 +36,25 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
 public interface BoardService {
 
     public BoardDTO read(Long id);
-    
-    // 페이지네이션 적용 X
+
+    /**
+     * 페이징과 정렬 제외하고, 모든 게시글 리스트 가져오기
+     * @param 
+     * @return List<BoardDTO>
+     * 
+     * @Transactional :
+     * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.study.springbootjpa.miri.domain.Board.replys, could not initialize proxy - no Session
+     */
     public List<BoardDTO> getList();
+    /**
+     * 페이징과 정렬 포함한 게시글 리스트 가져오기
+     * @param Pageable pageable
+     * @return Page<BoardDTO>
+     * 
+     * @Transactional :
+     * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.study.springbootjpa.miri.domain.Board.replys, could not initialize proxy - no Session
+     */
+    public Page<BoardDTO> getList(Pageable pageable);
 
 	public BoardDTO insert(BoardDTO board);
     public BoardDTO update(BoardDTO board);
@@ -52,7 +71,7 @@ public interface BoardService {
         boolean haveReplys = dto.getReplys()!=null;
 
         if(haveReplys){
-            dto.getReplys().forEach(i -> { // i = 각 ReplyDTO
+            dto.getReplys().forEach( (ReplyDTO i) -> { // i = 각 ReplyDTO
                 replys.add(
                     Reply.builder()
                     .replyId(i.getReplyId())
@@ -91,7 +110,7 @@ public interface BoardService {
         // 1. Board.replys -> replys(ReplyDTO)
         List<ReplyDTO> replys = new ArrayList<>();
         
-        entity.getReplys().forEach(i -> { // i = Reply
+        entity.getReplys().forEach( (Reply i) -> { // i = Reply
             replys.add(
                 ReplyDTO.builder()
                 .replyId(i.getReplyId())
@@ -118,5 +137,5 @@ public interface BoardService {
                 .build();
 
     }
-    
+
 }

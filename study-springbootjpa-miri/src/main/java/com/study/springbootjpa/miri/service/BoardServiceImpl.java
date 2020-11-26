@@ -1,7 +1,7 @@
 package com.study.springbootjpa.miri.service;
 
-
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -10,17 +10,30 @@ import com.study.springbootjpa.miri.domain.Board;
 import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.repository.BoardRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.log4j.Log4j2;
 @Service
 @Log4j2
 public class BoardServiceImpl implements BoardService {
+    /**
+     * Page 객체 얻어오는 repository 쿼리 날릴 때, 왜 Transaction 필요할까?
+     * Page 쿼리 + Page Count 쿼리가 논리적으로 같은 단위의 작업이어서?
+     */
 
-    //생성자 주입
+
     private final BoardRepository repository;
+    private final Function<Board,BoardDTO> boardPageConveter; // Page<Board> -> Page<BoardDTO> 변환 위함
     public BoardServiceImpl(BoardRepository repository){
         this.repository = repository;
+        this.boardPageConveter = new Function<Board,BoardDTO>(){
+            @Override
+            public BoardDTO apply(Board board) {
+                return convertToDto(board);
+            }
+        };
     }
 
     @Transactional
@@ -36,17 +49,29 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public List<BoardDTO> getList() {
-        // 페이징 X
+        // 페이징과 정렬 X
         List<Board> boards = repository.getBoardListWithReply();
 
         List<BoardDTO> dtos = boards.stream().map(i -> convertToDto(i)).collect(Collectors.toList());
         return dtos;
     }
 
+
+    @Override
+    @Transactional
+    public Page<BoardDTO> getList(Pageable pageable) {
+        Page<Board> boardPages = repository.getBoardListWithReply(pageable);
+
+        // Page<Board> -> Page<BoardDTO> 로 변환
+        Page<BoardDTO> boardDtoPages = boardPages.map(board -> boardPageConveter.apply(board));
+
+        return null;
+    }
+
     @Override
     public BoardDTO insert(BoardDTO board) {
-        // null
         Board boardAfterInsert = repository.save(convertToEntity(board));
 
         
@@ -55,9 +80,6 @@ public class BoardServiceImpl implements BoardService {
         return convertToDto(boardAfterInsert);
     }
 
-    /**
-     * TODO : update 시 기존 엔티티와 새 엔티티 내용 검사
-     */
     @Override
     public BoardDTO update(BoardDTO board) {
         // 인자 board : 새로 업데이트할 내용 담은 board

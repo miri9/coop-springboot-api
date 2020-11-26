@@ -19,7 +19,7 @@ public interface ReplyRepository extends JpaRepository<Reply,Long> {
     @Query(value = "select r from Reply r where r.replyId = :replyId")
     public Reply getReply(@Param("replyId") Long replyId);
 
-    @Query(value = "select r from Reply r inner join Board b on b.boardId = :boardId")
+    @Query(value = "select r from Reply r inner join Board b on b.boardId = :boardId order by  r.replyId")
     public List<Reply> getReplyList(@Param("boardId") Long boardId);
     
 }

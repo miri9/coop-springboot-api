@@ -12,7 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,8 @@ import lombok.ToString;
 
  // TODO : validation 과 jpa association
  // TODO : 비즈니스 로직 메서드 추가
+ // TODO : TOString 관련 (프로토타입, 주소값만 보이기)
+ // TODO : min,max 설정 걸기
 @Entity
 @Table(name = "tbl_board")
 @NoArgsConstructor
@@ -66,7 +69,6 @@ public class Board {
 
     // @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime createdAt;
-    // @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
     private LocalDateTime modifiedAt;
 
     private boolean isDeleted;

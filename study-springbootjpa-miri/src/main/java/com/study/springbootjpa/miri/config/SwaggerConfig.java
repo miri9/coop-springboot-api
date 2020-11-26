@@ -1,5 +1,7 @@
 package com.study.springbootjpa.miri.config;
 
+import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +12,10 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.DocExpansion;
+import springfox.documentation.swagger.web.ModelRendering;
+import springfox.documentation.swagger.web.UiConfiguration;
+import springfox.documentation.swagger.web.UiConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
@@ -18,6 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * https://swagger.io/specification/					- specification
  * https://springfox.github.io/springfox/docs/current/	- documentation
  * https://springboot.tistory.com/24	- 기본설정
+ * https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api     - 튜토리얼 (Vaildation 추가하기)
  * 
  * [테스트 URL]
  * http://localhost:port/v2/api-docs
@@ -32,8 +39,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-    private ApiInfo apiInfo;
-    private Contact contact;
+    // private ApiInfo apiInfo;
+    // private Contact contact;
+    
     /**
      * Docket 빈 설정
      */
@@ -42,8 +50,9 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.study.springbootjpa.miri.controller"))
-                .paths(PathSelectors.any()) // ??
-                .build();
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(getInfo());
     }
     
     /**
@@ -51,22 +60,32 @@ public class SwaggerConfig {
      * TODO : 적용안됨
      */
     public ApiInfo getInfo(){
-        contact = new Contact("Ishift","http://www.ishift.co.kr/","mrpark@ishift.co.kr");
-        apiInfo = new ApiInfoBuilder()
+        Contact contact = new Contact("mrpark-ishift","http://www.ishift.co.kr/","mrpark@ishift.co.kr");
+        return new ApiInfoBuilder()
                 .title("Spring-Boot REST API")
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
                 .version("1.0")
                 .contact(contact)
                 .description("Spring-Boot 기반 Rest Api 입니다.")
+                .extensions(Collections.emptyList())
+                .termsOfServiceUrl("Term of Service")
                 .build();
-        return apiInfo;
+        // new ApiInfoBuilder()
+        //         .title("Spring-Boot REST API")
+        //         .license("Apache 2.0")
+        //         .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
+        //         .version("1.0")
+        //         .contact(contact)
+        //         .description("Spring-Boot 기반 Rest Api 입니다.")
+        //         .extensions(Collections.emptyList())
+        //         .termsOfServiceUrl("Term of Service")
+        //         .build();
     }
 
     /**
-     * 커스텀 메서드 응답 메시지 설정
+     * UI 설정
      */
-
 
     
 }

@@ -5,6 +5,11 @@ import java.util.List;
 import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.service.BoardService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
@@ -62,6 +66,7 @@ public class BoardRestController{
     public ResponseEntity<BoardDTO> readBoard(
         @ApiParam(value = "DB에 등록된 board 의 Id.")
         @PathVariable("id") Long id){
+            
         BoardDTO result = boardService.read(id);
 
         
@@ -79,6 +84,43 @@ public class BoardRestController{
 
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
+
+    /**
+     * 현재 : 페이징과 함께 모든 게시물을 가져온다.
+     * 
+     * [프론트에서 보낼 인자]
+     * 1. page : 현재 페이지 (idx 이므로 0부터 시작.즉 1페이지는 page = 0.)
+     * 2. amount : 한 페이지에 보여줄 게시글 수 
+     * 
+     * [백엔드에서 준비할 인자]
+     * 1. Sort sort : order by + JPA
+     * 2. Pageable pageable : page,size,sort 기반
+     * => Page<BoardDTO> 반환
+     * 
+     * @return ResponseEntity<Page<BoardDTO>>
+     */
+    @ApiOperation(value = "[SELECT] 모든 Board 와 그에 딸린 Reply 가져오기 => Page 객체로 감싸 보냄")
+    @GetMapping(value = "/list2")
+    public ResponseEntity<Page<BoardDTO>> getBoardList2(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int amount)
+    {
+        // 프론트에서 보내는 인자
+        // int page = 0;
+        // int amount = 10;
+
+        // 백엔드에서 준비하는 인자
+        Sort sort = Sort.by(Direction.DESC, "boardId"); // board 내림차순
+        Pageable pageable = PageRequest.of(page, amount, sort);
+
+        Page<BoardDTO> result = boardService.getList(pageable);
+
+
+        
+
+        return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
     /**
      * 화면으로부터 dto 를 받아 DB 에 인서트
      * @param board
@@ -87,7 +129,6 @@ public class BoardRestController{
     @ApiOperation(value = "[INSERT] 인자로 BoardDTO 를 받아 DB에 등록")
     @PostMapping(value = "/write")
     public ResponseEntity<BoardDTO> insertBoard(
-        @RequestParam(value = "boardId") 
         @ApiParam(value = "boardId 를 제외하고 모든 필드에 값을 채운 BoardDTO.")
         @RequestBody 
         @Validated 
@@ -102,7 +143,7 @@ public class BoardRestController{
      * @param id
      * @return
      */
-    @ApiOperation(value = "[DELTE] 인자로 boardId 를 받아 삭제(Board.isDelete = true)")
+    @ApiOperation(value = "[DELTE] 인자로 boardId 를 받아 삭제(Board.isDelete, Board.replys 에 속한 Reply.isDelete = true)")
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<BoardDTO> deleteBoard(
         @ApiParam(value = "DB에 등록된 board 의 Id.")
@@ -121,8 +162,8 @@ public class BoardRestController{
     @ApiOperation(value = "[UPDATE] 인자로 BoardDTO 를 받아 수정")
     @PutMapping(value = "/update")
     public ResponseEntity<BoardDTO> updateBoard(
-        @RequestParam(value = "BoardDTO")
-        @ApiParam(value = "필드에 변경 사항이 생긴 BoardDTO.")
+        // @RequestParam(value = "BoardDTO",required = true)
+        // @ApiParam(value = "필드에 변경 사항이 생긴 BoardDTO.")
         @RequestBody @Validated BoardDTO board){
         BoardDTO boardAfterUpdate = boardService.update(board);
 

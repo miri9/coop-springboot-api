@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
@@ -16,10 +17,14 @@ import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.repository.BoardRepository;
 import com.study.springbootjpa.miri.service.BoardServiceImpl;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import lombok.extern.log4j.Log4j2;
 /** 유효성 검사 제외하고 가장 기본적인 CRUD 를 확인하는 케이스모음.
@@ -27,13 +32,14 @@ import lombok.extern.log4j.Log4j2;
  * - testUpdate
  * - testDelete
  * - testGet
- * - testGetList
+ * - testGetList (페이징X)
+ * - testGetList2 (페이징O)
  * 
  * [참고]
  * https://beomseok95.tistory.com/205
  * https://sas-study.tistory.com/316 assertAll
  */
-@Disabled
+// @Disabled
 @Log4j2
 @SpringBootTest(classes = StudySpringbootjpaMiriApplication.class) // 이거 없으면 bean 을 못찾음. 찾아볼것.
 public class BoardServiceTests {
@@ -44,13 +50,37 @@ public class BoardServiceTests {
     @Autowired
     private BoardRepository repository;
     
-    
+    @Test
+    public void tmpTest(){
+        //서비스단
+        int page = 0;
+        int amount = 10;
+
+        Sort sort = Sort.by(Direction.DESC, "boardId"); // board 내림차순
+        Pageable pageable = PageRequest.of(page, amount, sort);
+
+        Page<Board> results = repository.getBoardListWithReply(pageable);
+
+        results.forEach(i -> log.info("========= boardId: "+i.getBoardId()));
+
+    }
+
     @Test
     public void test(){
         log.info("hello world");
         log.info("service.getClass(): "+service.getClass());
     }
     
+    @Test
+    public void testAAAA(){
+        // 85개가 있다고 가정하고, 게시물 가져오기.
+        List<Board> boards = repository.getBoardListWithReply();
+
+        // 카운트 세기
+        assertTrue(boards.size()==85);
+
+    }
+
     @Test
     public void testInsert2(){
         
@@ -176,7 +206,27 @@ public class BoardServiceTests {
         service.getList().forEach(i->{
             log.info(i.toString());
         });
-
     }
+
+    // @Test
+    // public void testGetList2(){
+    //     // 모든 게시물 가져온다(페이징O)
+
+    //     // 컨트롤러 단
+    //     int page = 2;// 현 페이지 (idx  단위)
+    //     int amount = 10;// 한 페이지에 보여줄 게시물 수
+    //     Sort sort = Sort.by(Direction.DESC,"boardId");
+    //     Pageable pageable = PageRequest.of(page, amount, sort);
+
+    //     // 서비스 단
+    //     // Page<BoardDTO> boardDtoPage = service.getList(pageable);
+
+    //     // repository 단
+    //     log.info("====================================");
+    //     Page<Board> boardPage = repository.getBoardListWithReply(pageable);
+
+    //     // log.info("boardDtoPage: "+boardDtoPage);
+
+    // }
     
 }
