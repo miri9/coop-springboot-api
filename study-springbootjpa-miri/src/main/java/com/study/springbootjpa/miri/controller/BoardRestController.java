@@ -59,7 +59,7 @@ public class BoardRestController{
     /**
      * 해당 id 에 해당하는 board 가져오기
      * @param id
-     * @return
+     * @return ResponseEntity<BoardDTO>
      */
     @ApiOperation(value = "[SELECT] 인자 boardId 를 받아 Board 가져오기")
     @GetMapping(value = "/read/{id}")
@@ -75,9 +75,10 @@ public class BoardRestController{
 
     /**
      * 현재 : 페이징 없이 모든 게시물을 가져온다.
-     * @return
+     * @return ResponseEntity<Page<BoardDTO>>
+     * 
      */
-    @ApiOperation(value = "[SELECT] 페이징 없이 모든 Board 와 그에 딸린 Reply 가져오기")
+    @ApiOperation(value = "[SELECT] 페이징 없이 모든 Board 가져오기")
     @GetMapping(value = "/list")
     public ResponseEntity<List<BoardDTO>> getBoardList(){
         List<BoardDTO> result = boardService.getList();
@@ -86,7 +87,7 @@ public class BoardRestController{
     }
 
     /**
-     * 현재 : 페이징과 함께 모든 게시물을 가져온다.
+     * 페이징과 함께 모든 게시물을 가져온다.
      * 
      * [프론트에서 보낼 인자]
      * 1. page : 현재 페이지 (idx 이므로 0부터 시작.즉 1페이지는 page = 0.)
@@ -99,11 +100,13 @@ public class BoardRestController{
      * 
      * @return ResponseEntity<Page<BoardDTO>>
      */
-    @ApiOperation(value = "[SELECT] 모든 Board 와 그에 딸린 Reply 가져오기 => Page 객체로 감싸 보냄")
-    @GetMapping(value = "/list2")
-    public ResponseEntity<Page<BoardDTO>> getBoardList2(
+    @ApiOperation(value = "[SELECT] 모든 Board 와 그에 딸린 Reply 가져오기 => 총 게시글 수 포함하여 Page 객체로 감싸 보냄")
+    @GetMapping(value = "/list-paging")
+    public ResponseEntity<Page<BoardDTO>> getBoardListWithPaging(
+        @ApiParam(value = "게시판에서 현재 페이지 (idx 기반이므로 첫 페이지는 page=0 부터 시작)")
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int amount)
+        @ApiParam(value = "한 페이지 당 몇 개의 게시글을 보여줄 지 설정")
+        @RequestParam(defaultValue = "5") int amount)
     {
         // 프론트에서 보내는 인자
         // int page = 0;
@@ -124,7 +127,7 @@ public class BoardRestController{
     /**
      * 화면으로부터 dto 를 받아 DB 에 인서트
      * @param board
-     * @return
+     * @return ResponseEntity<BoardDTO>
      */
     @ApiOperation(value = "[INSERT] 인자로 BoardDTO 를 받아 DB에 등록")
     @PostMapping(value = "/write")
@@ -141,7 +144,7 @@ public class BoardRestController{
     /**
      * 화면으로부터 id 를 받아, 해당하는 게시글을 DB 에서 삭제 (isDeleted = true)
      * @param id
-     * @return
+     * @return ResponseEntity<BoardDTO>
      */
     @ApiOperation(value = "[DELTE] 인자로 boardId 를 받아 삭제(Board.isDelete, Board.replys 에 속한 Reply.isDelete = true)")
     @DeleteMapping(value = "/delete/{id}")
@@ -157,13 +160,13 @@ public class BoardRestController{
      * 화면으로부터 dto 를 받아, 해당하는 게시글을 update
      * put OR patch method 차이점 : https://papababo.tistory.com/269 참고. 
      * @param board
-     * @return
+     * @return ResponseEntity<BoardDTO>
      */
     @ApiOperation(value = "[UPDATE] 인자로 BoardDTO 를 받아 수정")
     @PutMapping(value = "/update")
     public ResponseEntity<BoardDTO> updateBoard(
         // @RequestParam(value = "BoardDTO",required = true)
-        // @ApiParam(value = "필드에 변경 사항이 생긴 BoardDTO.")
+        @ApiParam(value = "boardId 를 포함하며, 필드에 변경 사항이 생긴 BoardDTO.")
         @RequestBody @Validated BoardDTO board){
         BoardDTO boardAfterUpdate = boardService.update(board);
 

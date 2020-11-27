@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Id;
 
-import org.springframework.data.annotation.CreatedDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,7 +46,6 @@ public class ReplyDTO {
     private String replyContent;
 
     // @JsonFormat(pattern = "yyyy/MM/dd HH:mm:ss")
-
     private LocalDateTime createdAt;
     private boolean isDeleted;
 

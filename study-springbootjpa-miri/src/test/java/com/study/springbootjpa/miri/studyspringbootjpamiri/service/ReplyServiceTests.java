@@ -13,6 +13,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -48,7 +53,6 @@ public class ReplyServiceTests {
                                     .replyContent("reply_content")
                                     .createdAt(LocalDateTime.now())
                                     .isDeleted(false)
-                                    .board(boardId)
                                     .build();
 
         log.info("replyBeforeInsert: "+replyBeforeInsert.toString());
@@ -83,7 +87,6 @@ public class ReplyServiceTests {
                 .replyContent("reply_content"+j)
                 .createdAt(LocalDateTime.now())
                 .isDeleted(false)
-                .board(i)
                 .build();
 
                 log.info("replyBeforeInsert: "+replyBeforeInsert);
@@ -136,6 +139,24 @@ public class ReplyServiceTests {
 
         assertTrue(target == deletedReply.getReplyId() && deletedReply.isDeleted() == true, "testDelete 테스트 : id 혹은 isDeleted 문제");
 
+    }
+
+    @Test
+    public void testGetListWithPaging(){
+        // 프론트에서 준비하는 인자 : page, amount, boardId
+        int page = 0;
+        int amount = 10;
+        long boardId = 8L;
+        
+        // 백엔드에서 준비하는 인자
+        Sort sort = Sort.by(Direction.ASC, "replyId");
+        Pageable pageable = PageRequest.of(page, amount, sort);
+
+        Page<ReplyDTO> result = service.getList(pageable,boardId);
+
+        result.getContent().forEach(i->{
+            log.info("\n replyDTO: \n"+i.toString());
+        });
     }
 
 }

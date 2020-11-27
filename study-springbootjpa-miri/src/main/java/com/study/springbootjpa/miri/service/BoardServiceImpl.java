@@ -62,12 +62,15 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Page<BoardDTO> getList(Pageable pageable) {
+        // 페이징과 정렬 O
+        log.info("BoardServiceImpl getList - param pageable.pageSize: "+pageable.getPageSize());
+        log.info("BoardServiceImpl getList - param pageable.getPageNumber: "+pageable.getPageNumber());
         Page<Board> boardPages = repository.getBoardListWithReply(pageable);
 
         // Page<Board> -> Page<BoardDTO> 로 변환
         Page<BoardDTO> boardDtoPages = boardPages.map(board -> boardPageConveter.apply(board));
 
-        return null;
+        return boardDtoPages;
     }
 
     @Override

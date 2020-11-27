@@ -5,6 +5,9 @@ import java.util.List;
 import com.study.springbootjpa.miri.domain.Reply;
 import com.study.springbootjpa.miri.dto.ReplyDTO;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 /**
  * ReplyService
  * 
@@ -32,13 +35,21 @@ import com.study.springbootjpa.miri.dto.ReplyDTO;
 public interface ReplyService {
     
     public ReplyDTO read(Long replyId);
-
+    
     /**
      * 페이지네이션 적용 X.
-     * @param Long board_id
+     * @param boardId 댓글이 속한 Long boardId
+     * @return List<ReplyDTO>
      */
     public List<ReplyDTO> getList(Long boardId);
-
+    /**
+     * 페이지네이션 적용O.
+     * @param Pageable pageable(page,amount,sort)
+     * @param boardId 댓글이 속한 Long boardId
+     * @return Page<ReplyDTO>
+     */
+    public Page<ReplyDTO> getList(Pageable pageable, Long boardId);
+    
     public ReplyDTO insert(ReplyDTO reply);
     public ReplyDTO update(ReplyDTO reply);
 
@@ -84,6 +95,7 @@ public interface ReplyService {
                         .board(entity.getBoard())
                         .build();
     }
+
 
 
     

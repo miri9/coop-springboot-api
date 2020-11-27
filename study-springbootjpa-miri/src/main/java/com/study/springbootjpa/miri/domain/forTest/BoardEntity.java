@@ -1,12 +1,12 @@
-package com.study.springbootjpa.miri.dto;
+package com.study.springbootjpa.miri.domain.forTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import com.study.springbootjpa.miri.dto.ReplyDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +19,6 @@ import lombok.ToString;
  * DTO Board
  * 
  * by miri
- * 
- * TODO : replys 제외하고 board 내용만 담는 boardDTO 만들기 @Embeddable,  @Embedded 이용
  * 
  * [기본 필드] Long boardId String title String content String writer : 익명 멤버 (시큐리티
  * 도입 시 수정 필요) String pw : 익명 멤버 (시큐리티 도입 시 수정 필요) LocalDateTime createdAt,
@@ -40,7 +38,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Builder
-public class BoardDTO {
+@MappedSuperclass
+public class BoardEntity {
     @Id
     private Long boardId;
 
@@ -60,15 +59,5 @@ public class BoardDTO {
 
     private boolean isDeleted;
 
-    // 조인 데이터 보관용 필드
-    private List<ReplyDTO> replys;
-    // private List<AttachFileDTO> files;
-
-    public void addReply(ReplyDTO dto){
-        this.replys.add(dto);
-    }
-    public void addReply(List<ReplyDTO> dtos){
-        dtos.forEach(replyDto -> this.replys.add(replyDto));
-    }
 
 }

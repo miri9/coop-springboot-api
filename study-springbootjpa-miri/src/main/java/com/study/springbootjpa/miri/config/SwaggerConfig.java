@@ -60,7 +60,7 @@ public class SwaggerConfig {
      * TODO : 적용안됨
      */
     public ApiInfo getInfo(){
-        Contact contact = new Contact("mrpark-ishift","http://www.ishift.co.kr/","mrpark@ishift.co.kr");
+        Contact contact = new Contact("ishift","http://www.ishift.co.kr/","mrpark@ishift.co.kr");
         return new ApiInfoBuilder()
                 .title("Spring-Boot REST API")
                 .license("Apache 2.0")

@@ -18,17 +18,24 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface BoardRepository extends JpaRepository<Board,Long> {
+
+    /**
+     * @Query.nativeQuery 속성 : boolean
+        Configures whether the given query is a native one. Defaults to false.
+        Default: false
+     */
     // 단일 게시글 가져오기 + 페이징 x
     @Query(value = "select b from Board b where b.boardId = :id")
     public Board getBoardWithReply(@Param("id") Long id);
 
     // 여러 개 게시글 가져오기 + 페이징 o
-    @Query(value = "select b,b.replys from Board b order by b.boardId",
+    // @Query(value = "select b,b.replys from Board b order by b.boardId",
+    @Query(value = "select b from Board b",
     countQuery = "select count(b) from Board b")
-	public Page<Board> getBoardListWithReply(Pageable pageable);
-
+    public Page<Board> getBoardListWithReply(Pageable pageable);
+    
     // 여러 개 게시글 가져오기 + 페이징 X
-    // @Query(value = "select b,b.replys from Board b")
+    // @Query(value = "select b,b.replys from Board b") // 네..
     // public List<Board> getBoardListWithReply();
     @Query(value = "select b from Board b")
     public List<Board> getBoardListWithReply();

@@ -17,6 +17,7 @@ import com.study.springbootjpa.miri.dto.BoardDTO;
 import com.study.springbootjpa.miri.repository.BoardRepository;
 import com.study.springbootjpa.miri.service.BoardServiceImpl;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +51,15 @@ public class BoardServiceTests {
     @Autowired
     private BoardRepository repository;
     
+    @Test
+    public void aaaaq(){
+        a tmp = new a(10);
+        log.info("tmp.z(): "+tmp.z());
+        a tmp2 = new a(10);
+        log.info("tmp.z(): "+tmp2.z());
+
+    }
+
     @Test
     public void tmpTest(){
         //서비스단
@@ -140,7 +150,7 @@ public class BoardServiceTests {
          */
         
         // id 6번 게시물 가져오기
-        Long num = 6L;
+        Long num = 8L;
         
         BoardDTO board = service.read(num);
         log.info("get으로 가져온 board: "+board.toString());
