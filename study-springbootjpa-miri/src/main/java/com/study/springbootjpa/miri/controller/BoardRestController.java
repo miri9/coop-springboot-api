@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiParam;
  * 
  * [규칙]
  * 1. CRUD 메서드는 무조건 해당 작업의 대상인 domain 객체를 반환
- * 2. 성공/실패 로그를 출력 'AOP'
+ * 2. (미완성) 성공/실패 로그를 출력 'AOP'
  */
 @RestController
 @RequestMapping(value = "board")

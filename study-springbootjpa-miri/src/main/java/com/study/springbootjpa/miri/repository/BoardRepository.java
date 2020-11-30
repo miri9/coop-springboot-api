@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
  * - getBoardListWithReply(Pageable  => 페이징 O) : reply 정보가 포함된 board 도메인 객체들을 가져온다.
  * 
  */
+@FunctionalInterface
 @Repository
 public interface BoardRepository extends JpaRepository<Board,Long> {
 
